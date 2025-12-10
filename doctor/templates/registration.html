@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+
+    <link rel="stylesheet" href="{% static 'registerd.css' %}">
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="reg-card">
+
+        <!-- LEFT SIDE IMAGE -->
+        <div class="left-side">
+            <img src="{% static 'image.png' %}" alt="Registration Illustration">
+        </div>
+
+        <!-- RIGHT SIDE FORM -->
+        <div class="right-side">
+
+            <h2>Create Account</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: {% if message.tags == 'error' %}red{% else %}green{% endif %}; color: white; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="Enter full name" required>
+
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter email" required>
+
+                <label>Specialty</label>
+                <input type="text" name="specialty" placeholder="e.g., Cardiology, General Medicine" required>
+
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter password" required>
+
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="Re-enter password" required>
+
+                <button type="submit" class="reg-btn">Register</button>
+
+                <p class="login-link">Already have an account?  
+                    <a href="{% url 'doctorLogin' %}">Login</a>
+                </p>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

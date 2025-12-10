@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+
+    <link rel="stylesheet" href="{% static 'loginu.css' %}">
+</head>
+
+<body>
+
+<div class="page-bg">
+
+    <div class="login-card">
+
+        <!-- LEFT SIDE IMAGE -->
+        <div class="left-side">
+            <img src="{% static 'image21.png' %}" alt="User Illustration">
+        </div>
+
+        <!-- RIGHT SIDE FORM -->
+        <div class="right-side">
+
+            <h2>User Login</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: {% if message.tags == 'error' %}red{% else %}green{% endif %}; color: white; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'userLogin' %}">
+                {% csrf_token %}
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+                <button type="submit" class="login-btn">Login</button>
+
+                <p class="register-link" style="text-align: center; margin-top: 20px;">Don't have an account?  
+                    <a href="{% url 'registerUser' %}" style="text-decoration: none; color: #2575fc; font-weight: 600;">Register</a>
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

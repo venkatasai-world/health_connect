@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Shop Registration</title>
+
+    <link rel="stylesheet" href="{% static 'registerm.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Ensure register button is always visible */
+        .reg-btn {
+            position: relative !important;
+            z-index: 10 !important;
+            cursor: pointer !important;
+        }
+        .reg-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 184, 255, 0.4);
+        }
+        .reg-btn:active {
+            transform: translateY(0);
+        }
+        /* Make all interactive elements show pointer */
+        button, a, input[type="submit"], select {
+            cursor: pointer !important;
+        }
+        input[type="text"], input[type="email"], input[type="password"], textarea {
+            cursor: text !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-bg">
+    <div class="register-card">
+
+        <!-- LEFT IMAGE -->
+        <div class="left-side">
+            <img src="{% static 'image22.png' %}" alt="Medical Shop Illustration">
+        </div>
+
+        <!-- RIGHT REGISTER FORM -->
+        <div class="right-side">
+            <h2>Medical Shop Registration</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: {% if message.tags == 'error' %}red{% else %}green{% endif %}; color: white; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label>Medical Shop Name</label>
+                <input type="text" name="shop_name" placeholder="Enter shop name" required>
+
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter email" required>
+
+                <label>Owner Name</label>
+                <input type="text" name="owner_name" placeholder="Enter owner's name" required>
+
+                <label>Location</label>
+                <input type="text" name="location" placeholder="Enter location" required>
+
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter password" required>
+
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="Re-enter password" required>
+
+                <button type="submit" class="reg-btn" style="width: 100% !important; padding: 15px !important; background: #4AB8FF !important; color: white !important; border: none !important; border-radius: 8px !important; font-size: 17px !important; font-weight: 600 !important; cursor: pointer !important; margin-top: 20px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <i class="fa-solid fa-user-plus"></i> Register Now
+                </button>
+            </form>
+
+            <p style="text-align: center; margin-top: 15px;">
+                Already have an account? <a href="{% url 'medicalLogin' %}" style="text-decoration: none; color: #2575fc;">Login here</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

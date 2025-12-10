@@ -1,0 +1,6 @@
+Django
+google-generativeai
+Pillow
+reportlab
+python-dotenv
+

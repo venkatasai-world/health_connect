@@ -1,0 +1,143 @@
+/* BASIC RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Global cursor styles */
+button, a, input[type="submit"], input[type="button"], select, .clickable, .nav-button, .hero-btn {
+    cursor: pointer !important;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
+    cursor: text !important;
+}
+
+body {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    height: 100vh;
+    color: white;
+}
+
+/* NAVBAR */
+.navbar {
+    width: 100%;
+    padding: 18px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.logo span {
+    color: #ffe600;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 17px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #ffe600;
+}
+
+/* NAV BUTTONS */
+.nav-btns .btn {
+    padding: 8px 18px;
+    margin-left: 10px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.login {
+    border: 2px solid white;
+}
+
+.login:hover {
+    background: white;
+    color: #2575fc;
+}
+
+.signup {
+    background: #ffe600;
+    color: black;
+}
+
+.signup:hover {
+    background: black;
+    color: #ffe600;
+}
+
+/* HERO SECTION */
+.hero {
+    text-align: center;
+    margin-top: 160px;
+    padding: 0 20px;
+}
+
+.hero h1 {
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.hero h1 span {
+    color: #ffe600;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-top: 10px;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    margin-top: 35px;
+}
+
+.hero-btn {
+    padding: 12px 28px;
+    margin: 0 10px;
+    border-radius: 30px;
+    background: #ffe600;
+    color: black;
+    text-decoration: none;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: black;
+    color: #ffe600;
+}
+
+.hero-btn.light {
+    background: transparent;
+    border: 2px solid #ffe600;
+    color: #ffe600;
+}
+
+.hero-btn.light:hover {
+    background: #ffe600;
+    color: black;
+}

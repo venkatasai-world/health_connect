@@ -1,0 +1,124 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+}
+
+/* Global cursor styles */
+button, a, input[type="submit"], input[type="button"], select, .clickable {
+    cursor: pointer !important;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
+    cursor: text !important;
+}
+
+/* Background */
+body {
+    background: #e8f3ff;
+}
+
+.page-bg {
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Card */
+.register-card {
+    width: 900px;
+    min-height: 650px;
+    height: auto;
+    background: white;
+    border-radius: 18px;
+    display: flex;
+    overflow: visible;
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Left Image */
+.left-side {
+    width: 50%;
+    background: #f4faff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-side img {
+    width: 90%;
+    height: auto;
+}
+
+/* Right Side Form */
+.right-side {
+    width: 50%;
+    padding: 45px 40px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: visible;
+}
+
+.right-side h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* Labels */
+label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #d7dff0;
+    background: #eef3ff;
+    font-size: 15px;
+    outline: none;
+}
+
+/* Form */
+.right-side form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+input:focus {
+    border-color: #4a90e2;
+}
+
+/* Button */
+.reg-btn {
+    width: 100% !important;
+    padding: 15px !important;
+    background: #4AB8FF !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: 0.3s;
+    margin-top: 20px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.reg-btn:hover {
+    background: #2496dd !important;
+}

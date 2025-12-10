@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medical Shop Dashboard</title>
+  <link rel="stylesheet" href="{% static 'dashm.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: #daf0ff;
+    }
+    .prescription-section {
+      margin-top: 30px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .prescription-select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #2575fc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .prescription-details {
+      background: #f0f8ff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .med-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 20px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 2px solid #2575fc;
+    }
+    .med-table th {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      padding: 14px 12px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-right: 2px solid rgba(255,255,255,0.3);
+      border-bottom: 2px solid rgba(255,255,255,0.3);
+      white-space: nowrap;
+      min-width: 100px;
+    }
+    .med-table th:last-child {
+      border-right: none;
+    }
+    .med-table td {
+      padding: 14px 12px;
+      border-bottom: 2px solid #e0e0e0;
+      border-right: 2px solid #e0e0e0;
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 100px;
+      max-width: 200px;
+    }
+    .med-table td:last-child {
+      border-right: none;
+    }
+    .med-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .med-table tbody tr {
+      transition: background 0.3s ease;
+    }
+    .med-table tbody tr:hover {
+      background: #f0f8ff;
+    }
+    .med-table tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+    .med-table tbody tr:nth-child(even):hover {
+      background: #f0f8ff;
+    }
+    /* Cursor styles */
+    button, a, select, .clickable {
+      cursor: pointer !important;
+    }
+    input, textarea {
+      cursor: text !important;
+    }
+    .pay-btn {
+      background: #ffe600;
+      color: #000;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    .pay-btn:hover {
+      background: #000;
+      color: #ffe600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <h2 style="color: white;">{{ request.session.medicalshop_name|default:"Medical Shop" }}</h2>
+      </div>
+
+      <div class="nav-center">
+        <ul class="nav-links">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'medicalLogout' %}" style="color: #ff4444;">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN BODY -->
+  <main class="container">
+    <!-- Medicine Management Section -->
+    <div class="prescription-section" style="margin-bottom: 30px;">
+      <h2 class="title" style="margin-bottom: 20px;"><i class="fa-solid fa-pills"></i> Manage Your Medicines</h2>
+      
+      <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h3 style="color: #2575fc; margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> Add New Medicine</h3>
+        <form id="add-medicine-form" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; gap: 15px; align-items: end;">
+          {% csrf_token %}
+          <input type="hidden" id="med-edit-id" value="">
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Medicine Name</label>
+            <input type="text" id="med-name-input" placeholder="e.g., Paracetamol 500mg" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Quantity</label>
+            <input type="number" id="med-quantity-input" placeholder="0" min="0" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Price (₹)</label>
+            <input type="number" id="med-price-input" placeholder="0.00" step="0.01" min="0" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Expiry Date</label>
+            <input type="date" id="med-expiry-input" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <div>
+            <button type="submit" id="med-submit-btn" style="width: 100%; padding: 12px; background: #2575fc; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+              <i class="fa-solid fa-plus"></i> <span id="med-btn-text">Add</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Medicines List -->
+      <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px;">
+        <h3 style="color: #2575fc; margin-bottom: 20px;"><i class="fa-solid fa-list"></i> Your Available Medicines</h3>
+        <div style="overflow-x: auto;">
+          <table class="med-table">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Medicine Name</th>
+                <th>Quantity</th>
+                <th>Price (₹)</th>
+                <th>Expiry Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="medicines-list">
+              {% for medicine in medicines %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ medicine.name }}</td>
+                <td>{{ medicine.quantity }}</td>
+                <td>₹{{ medicine.price }}</td>
+                <td>{{ medicine.expiry_date|date:"Y-m-d"|default:"Not set" }}</td>
+                <td>
+                  <button onclick="editMedicine({{ medicine.id }}, '{{ medicine.name|escapejs }}', {{ medicine.quantity }}, {{ medicine.price }}, '{{ medicine.expiry_date|date:"Y-m-d"|default:"" }}')" style="padding: 8px 15px; background: #2575fc; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">
+                    <i class="fa-solid fa-edit"></i> Edit
+                  </button>
+                  <button onclick="deleteMedicine({{ medicine.id }})" style="padding: 8px 15px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fa-solid fa-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: #666;">No medicines added yet. Add your first medicine above!</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shop Information Update Section -->
+    <h2 class="title"><i class="fa-solid fa-store"></i> Shop Information</h2>
+    <div style="background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+      <button onclick="toggleShopEdit()" style="padding: 10px 20px; background: #2575fc; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;">
+        <i class="fa-solid fa-edit"></i> Edit Shop Information
+      </button>
+      
+      <div id="shop-info-display">
+        <p><strong>Shop Name:</strong> {{ shop.shop_name }}</p>
+        <p><strong>Owner Name:</strong> {{ shop.owner_name }}</p>
+        <p><strong>Email:</strong> {{ shop.email }}</p>
+        <p><strong>Location:</strong> {{ shop.location }}</p>
+        {% if shop.latitude and shop.longitude %}
+        <p><strong>Coordinates:</strong> {{ shop.latitude }}, {{ shop.longitude }}</p>
+        {% endif %}
+      </div>
+      
+      <div id="shop-info-edit" style="display: none;">
+        <form id="shop-update-form" onsubmit="updateShopInfo(event)">
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Shop Name</label>
+            <input type="text" id="shop-name" value="{{ shop.shop_name }}" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+          </div>
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Owner Name</label>
+            <input type="text" id="owner-name" value="{{ shop.owner_name }}" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+          </div>
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Location</label>
+            <input type="text" id="shop-location" value="{{ shop.location }}" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+              <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Latitude</label>
+              <input type="number" step="any" id="shop-latitude" value="{{ shop.latitude|default:'' }}" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+            </div>
+            <div>
+              <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Longitude</label>
+              <input type="number" step="any" id="shop-longitude" value="{{ shop.longitude|default:'' }}" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button type="submit" style="padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+              <i class="fa-solid fa-save"></i> Save Changes
+            </button>
+            <button type="button" onclick="toggleShopEdit()" style="padding: 12px 24px; background: #ff4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+              <i class="fa-solid fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+  </main>
+
+  <script>
+    // Shop Update Functions
+    function toggleShopEdit() {
+      const displayDiv = document.getElementById('shop-info-display');
+      const editDiv = document.getElementById('shop-info-edit');
+      
+      if (editDiv.style.display === 'none') {
+        displayDiv.style.display = 'none';
+        editDiv.style.display = 'block';
+      } else {
+        displayDiv.style.display = 'block';
+        editDiv.style.display = 'none';
+      }
+    }
+
+    async function updateShopInfo(event) {
+      event.preventDefault();
+      
+      const shopName = document.getElementById('shop-name').value.trim();
+      const ownerName = document.getElementById('owner-name').value.trim();
+      const location = document.getElementById('shop-location').value.trim();
+      const latitude = document.getElementById('shop-latitude').value;
+      const longitude = document.getElementById('shop-longitude').value;
+      
+      if (!shopName || !ownerName || !location) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      try {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        const response = await fetch('/update-shop/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({
+            shop_name: shopName,
+            owner_name: ownerName,
+            location: location,
+            latitude: latitude || null,
+            longitude: longitude || null
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert('Shop information updated successfully!');
+          location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error updating shop: ' + error.message);
+      }
+    }
+
+    // Reset form
+    function resetMedicineForm() {
+      document.getElementById('med-edit-id').value = '';
+      document.getElementById('med-name-input').value = '';
+      document.getElementById('med-quantity-input').value = '';
+      document.getElementById('med-price-input').value = '';
+      document.getElementById('med-expiry-input').value = '';
+      document.getElementById('med-submit-btn').innerHTML = '<i class="fa-solid fa-plus"></i> <span id="med-btn-text">Add</span>';
+      document.getElementById('med-submit-btn').style.background = '#2575fc';
+    }
+
+    // Edit Medicine Function
+    function editMedicine(id, name, quantity, price, expiryDate) {
+      document.getElementById('med-edit-id').value = id;
+      document.getElementById('med-name-input').value = name || '';
+      document.getElementById('med-quantity-input').value = quantity || 0;
+      document.getElementById('med-price-input').value = price || 0;
+      document.getElementById('med-expiry-input').value = expiryDate || '';
+      document.getElementById('med-submit-btn').innerHTML = '<i class="fa-solid fa-save"></i> <span id="med-btn-text">Update</span>';
+      document.getElementById('med-submit-btn').style.background = '#28a745';
+      
+      // Scroll to form
+      document.getElementById('add-medicine-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Add Medicine Form Handler
+    document.getElementById('add-medicine-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('med-name-input').value.trim();
+      const quantity = parseInt(document.getElementById('med-quantity-input').value);
+      const price = parseFloat(document.getElementById('med-price-input').value);
+      const expiryDate = document.getElementById('med-expiry-input').value;
+      const medicineId = document.getElementById('med-edit-id').value;
+      
+      if (!name || quantity < 0 || price < 0) {
+        alert('Please fill all fields correctly!');
+        return;
+      }
+      
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+      
+      try {
+        const response = await fetch('/add-medicine/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({
+            name: name,
+            quantity: quantity,
+            price: price,
+            expiry_date: expiryDate || null,
+            medicine_id: medicineId || null
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(data.message);
+          resetMedicineForm();
+          location.reload(); // Reload to show updated medicine
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error saving medicine: ' + error.message);
+      }
+    });
+
+    // Delete Medicine Function
+    async function deleteMedicine(medicineId) {
+      if (!confirm('Are you sure you want to delete this medicine?')) {
+        return;
+      }
+      
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+      
+      try {
+        const response = await fetch('/delete-medicine/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({
+            medicine_id: medicineId
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(data.message);
+          location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        alert('Error deleting medicine: ' + error.message);
+      }
+    }
+  </script>
+
+</body>
+</html>

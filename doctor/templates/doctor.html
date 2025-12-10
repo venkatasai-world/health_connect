@@ -1,0 +1,979 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Prescription</title>
+    <link rel="stylesheet" href="{% static 'doctor.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #daf0ff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2575fc;
+        }
+        .header h1 {
+            color: #2575fc;
+            font-size: 28px;
+        }
+        .info-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .doctor-info, .patient-info {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #d0e8ff;
+        }
+        .doctor-info h3, .patient-info h3 {
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #2575fc;
+        }
+        table th, table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 2px solid #e0e0e0;
+            border-right: 2px solid #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        table th:last-child, table td:last-child {
+            border-right: none;
+        }
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        table th {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 2px solid rgba(255,255,255,0.3);
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+        table tbody tr {
+            transition: background 0.3s ease;
+        }
+        table tbody tr:hover {
+            background: #f0f8ff;
+        }
+        table tbody tr:nth-child(even) {
+            background: #fafbfc;
+        }
+        table tbody tr:nth-child(even):hover {
+            background: #f0f8ff;
+        }
+        /* Cursor styles */
+        button, a, select, input[type="submit"], .clickable {
+            cursor: pointer !important;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
+            cursor: text !important;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 18px 16px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: text;
+            min-height: 50px;
+            color: #000;
+            background: white;
+            font-weight: 600;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #666;
+            font-weight: 400;
+        }
+        select {
+            cursor: pointer;
+            background: white;
+            color: #000;
+        }
+        /* Prescription Form Styles */
+        .prescription-container {
+            background: white;
+            padding: 60px;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .prescription-header {
+            margin-bottom: 40px;
+        }
+        .prescription-header h2 {
+            margin: 0 !important;
+        }
+        .prescription-body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .prescription-body input,
+        .prescription-body select {
+            background: transparent !important;
+            border: none !important;
+            border-bottom: 2px solid #333 !important;
+            padding: 8px 0 8px 0 !important;
+            margin-bottom: 0 !important;
+            min-height: auto !important;
+            border-radius: 0 !important;
+            font-size: 16px !important;
+            color: #000 !important;
+            font-weight: 600 !important;
+        }
+        .prescription-body input::placeholder {
+            color: #999;
+        }
+        .prescription-body input:focus,
+        .prescription-body select:focus {
+            outline: none !important;
+            background: white !important;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2575fc;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .add-btn, .save-btn, .send-btn {
+            background: #2575fc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+        .add-btn:hover, .save-btn:hover, .send-btn:hover {
+            background: #6a11cb;
+        }
+        .send-btn {
+            background: #ffe600;
+            color: #000;
+        }
+        .send-btn:hover {
+            background: #000;
+            color: #ffe600;
+        }
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .medication-row {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 1.2fr 1.5fr 0.8fr 60px;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .medication-row:hover {
+            background: #f0f8ff;
+            border-color: #2575fc;
+            box-shadow: 0 4px 10px rgba(37, 117, 252, 0.15);
+        }
+        #medications-container {
+            margin-bottom: 20px;
+        }
+        .medication-row input,
+        .medication-row select {
+            margin-bottom: 0;
+            border: 2px solid #e0e0e0;
+            padding: 18px 16px;
+            border-radius: 6px;
+            min-height: 50px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .medication-row input:focus {
+            border-color: #2575fc;
+            outline: none;
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.2);
+        }
+        .medication-row select:focus {
+            border-color: #2575fc;
+            outline: none;
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.2);
+        }
+        .signature {
+            text-align: right;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #2575fc;
+        }
+        .health-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            color: #2575fc;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-confirmed {
+            background: #28a745;
+            color: #000;
+        }
+        .status-completed {
+            background: #6c757d;
+            color: white;
+        }
+        .status-cancelled {
+            background: #ff4444;
+            color: white;
+        }
+        .status-scheduled {
+            background: #ffe600;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div class="health-brand">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>HealthConnect</span>
+            </div>
+            <a href="{% url 'doctorLogout' %}" style="background: #ff4444; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+        <div class="header">
+            <h1><i class="fa-solid fa-prescription"></i> MediScript: Digital Prescription</h1>
+            <h2 style="color: #6a11cb; font-size: 20px; margin-top: 10px;">Dr. {{ doctor_name }} - {{ doctor_specialty }}</h2>
+        </div>
+
+        <!-- Appointments Section -->
+        {% if appointments %}
+        <div class="card" id="appointments" style="margin-bottom: 30px;">
+            <h3><i class="fa-solid fa-calendar-check"></i> Pending Appointments</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #2575fc;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                            <th style="padding: 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3);">Patient</th>
+                            <th style="padding: 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3);">Date</th>
+                            <th style="padding: 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3);">Time</th>
+                            <th style="padding: 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3);">Reason</th>
+                            <th style="padding: 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3);">Status</th>
+                            <th style="padding: 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr style="border-bottom: 2px solid #e0e0e0;">
+                            <td style="padding: 12px; border-right: 2px solid #e0e0e0;">{{ appointment.user.name }}</td>
+                            <td style="padding: 12px; border-right: 2px solid #e0e0e0;">{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                            <td style="padding: 12px; border-right: 2px solid #e0e0e0;">{{ appointment.appointment_time|time:"g:i A" }}</td>
+                            <td style="padding: 12px; border-right: 2px solid #e0e0e0;">{{ appointment.reason|default:"-"|truncatewords:5 }}</td>
+                            <td style="padding: 12px; border-right: 2px solid #e0e0e0;">
+                                <span class="status-badge status-{{ appointment.status }}">
+                                    {{ appointment.get_status_display }}
+                                </span>
+                            </td>
+                            <td style="padding: 12px;">
+                                {% if appointment.status == 'scheduled' %}
+                                <button onclick="updateAppointmentStatus('{{ appointment.id }}', 'confirmed')" style="padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; margin-right: 5px;">
+                                    <i class="fa-solid fa-check"></i> Accept
+                                </button>
+                                <button onclick="updateAppointmentStatus('{{ appointment.id }}', 'cancelled')" style="padding: 6px 12px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                    <i class="fa-solid fa-times"></i> Reject
+                                </button>
+                                {% elif appointment.status == 'confirmed' %}
+                                <button onclick="updateAppointmentStatus('{{ appointment.id }}', 'completed')" style="padding: 6px 12px; background: #2575fc; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                    <i class="fa-solid fa-check-circle"></i> Mark Complete
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="prescription-container">
+            <!-- Prescription Header -->
+            <div class="prescription-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="margin: 0; color: #2575fc; font-size: 28px; font-weight: 700;">Dr. {{ doctor_name }}</h2>
+                        <p style="margin: 5px 0 0 0; color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">{{ doctor_specialty }}</p>
+                    </div>
+                    <div style="text-align: right; font-size: 48px; color: #2575fc;">
+                        <i class="fa-solid fa-staff-aesculapius"></i>
+                    </div>
+                </div>
+                <hr style="margin: 20px 0; border: none; border-top: 2px solid #2575fc;">
+            </div>
+
+            <!-- Patient Information Section -->
+            <div class="prescription-body">
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Patient Name:</label>
+                        <input type="text" id="patient-name" placeholder="Full name" required style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Date:</label>
+                        <input type="date" id="prescription-date" style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 30px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Patient Email:</label>
+                        <input type="email" id="patient-email" placeholder="patient@example.com" required style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 25px; margin-bottom: 30px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Age:</label>
+                        <input type="number" id="patient-age" placeholder="Age" required style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Gender:</label>
+                        <select id="patient-gender" style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0; appearance: none; cursor: pointer;">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Weight (kg):</label>
+                        <input type="number" step="0.1" id="patient-weight" placeholder="Weight" required style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Height (cm):</label>
+                        <input type="number" step="0.1" id="patient-height" placeholder="Height" required style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 40px;">
+                    <label style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Diagnosis:</label>
+                    <input type="text" id="patient-diagnosis" placeholder="Enter diagnosis" style="padding: 12px 14px; height: 40px; font-size: 16px; width: 100%; border: 1px solid #333; border-bottom: 2px solid #333; box-sizing: border-box; background: transparent; color: #000; font-weight: 600; border-top: none; border-left: none; border-right: none; border-radius: 0;">
+                </div>
+
+                <!-- Rx Symbol -->
+                <div style="margin-bottom: 40px;">
+                    <h3 style="font-size: 60px; color: #1a1a1a; font-weight: 700; margin: 20px 0; font-family: Georgia, serif;">℞</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="medications">
+            <h3><i class="fa-solid fa-pills"></i> Medications</h3>
+            <!-- Single Label Row at Top -->
+            <div style="margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #2575fc;">
+                <div style="display: grid; grid-template-columns: 2fr 1.2fr 1.5fr 1.5fr 1fr 80px; gap: 15px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #2575fc; font-size: 13px; margin-bottom: 0;">Medication Name</label>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #2575fc; font-size: 13px; margin-bottom: 0;">Dosage</label>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #2575fc; font-size: 13px; margin-bottom: 0;">Frequency</label>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #2575fc; font-size: 13px; margin-bottom: 0;">Instructions</label>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #2575fc; font-size: 13px; margin-bottom: 0;">Duration</label>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #2575fc; font-size: 13px; margin-bottom: 0;">Action</label>
+                    </div>
+                </div>
+            </div>
+            <div id="medications-container">
+                <!-- Single medication input row - doctor enters all medicines here one by one -->
+                <div class="medication-row" data-index="0">
+                    <input type="text" class="med-name" placeholder="e.g., Aspirin, Paracetamol" required oninput="updateMedicationsTable()">
+                    <select class="med-dosage" required onchange="updateMedicationsTable()">
+                        <option value="">Select Dosage</option>
+                        <option value="250mg">250mg</option>
+                        <option value="500mg">500mg</option>
+                        <option value="750mg">750mg</option>
+                        <option value="1000mg">1000mg</option>
+                        <option value="5ml">5ml</option>
+                        <option value="10ml">10ml</option>
+                        <option value="1 tablet">1 tablet</option>
+                        <option value="2 tablets">2 tablets</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                    <select class="med-frequency" required onchange="updateMedicationsTable()">
+                        <option value="">Select Frequency</option>
+                        <option value="Once daily">Once daily</option>
+                        <option value="Twice daily">Twice daily</option>
+                        <option value="Thrice daily">Thrice daily</option>
+                        <option value="Four times daily">Four times daily</option>
+                        <option value="Every 6 hours">Every 6 hours</option>
+                        <option value="Every 8 hours">Every 8 hours</option>
+                        <option value="Every 12 hours">Every 12 hours</option>
+                        <option value="As needed">As needed</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                    <input type="text" class="med-instructions" placeholder="e.g., After food, With water" oninput="updateMedicationsTable()">
+                    <select class="med-duration" required onchange="updateMedicationsTable()">
+                        <option value="">Select Duration</option>
+                        <option value="3 days">3 days</option>
+                        <option value="5 days">5 days</option>
+                        <option value="7 days">7 days</option>
+                        <option value="10 days">10 days</option>
+                        <option value="14 days">14 days</option>
+                        <option value="21 days">21 days</option>
+                        <option value="30 days">30 days</option>
+                        <option value="Until finished">Until finished</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                    <button type="button" class="remove-btn" onclick="clearCurrentMedication()" title="Clear current medication"><i class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+            <button type="button" class="add-btn" onclick="addMedication()" title="Clear current and add new medication">
+                <i class="fa-solid fa-plus"></i> Add New Medication (Clears Previous)
+            </button>
+            
+            <!-- Medications Table View -->
+            <div style="margin-top: 20px;">
+                <h4 style="color: #2575fc; margin-bottom: 15px;"><i class="fa-solid fa-table"></i> Medications Summary</h4>
+                <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #2575fc;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 60px;">S.No.</th>
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 150px;">Medication Name</th>
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 100px;">Dosage</th>
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 120px;">Frequency</th>
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 120px;">Instructions</th>
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 100px;">Duration</th>
+                            <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 80px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medications-table-body">
+                        <tr>
+                            <td colspan="7" style="padding: 20px; text-align: center; color: #666;">No medications added yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="diagnosis">
+            <h3><i class="fa-solid fa-stethoscope"></i> Diagnosis & Vitals</h3>
+            <div class="row">
+                <div>
+                    <label for="diagnosis" style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Primary Diagnosis</label>
+                    <input type="text" id="diagnosis" placeholder="e.g., Common Cold, Hypertension">
+                </div>
+                <div>
+                    <label for="bp" style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Blood Pressure (mmHg)</label>
+                    <input type="text" id="bp" placeholder="e.g., 120/80">
+                </div>
+                <div>
+                    <label for="temperature" style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Temperature (°C)</label>
+                    <input type="text" id="temperature" placeholder="e.g., 37.5">
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="notes">
+            <h3><i class="fa-solid fa-notes-medical"></i> Follow-up & Notes</h3>
+            <label for="notes" style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Doctor's Notes</label>
+            <textarea id="notes" rows="4" placeholder="Enter any additional notes, follow-up instructions, or special recommendations..."></textarea>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <label style="display: inline-flex; align-items: center; gap: 8px; margin-right: 12px; font-weight: 600; color: #2575fc;">
+                <input type="checkbox" id="send-email-checkbox" checked style="width: 16px; height: 16px; margin: 0;">
+                Send prescription to patient via email
+            </label>
+            <button type="button" class="save-btn" onclick="savePrescription()">
+                <i class="fa-solid fa-save"></i> Save Prescription
+            </button>
+            <button type="button" class="send-btn" onclick="sendPrescription()">
+                <i class="fa-solid fa-paper-plane"></i> Send to Patient
+            </button>
+        </div>
+
+        <div class="signature">
+            <p><strong>Approved By:</strong> Dr. {{ doctor_name }}</p>
+            <p class="date" id="current-date"></p>
+        </div>
+    </div>
+
+    <script>
+        const currentDateEl = document.getElementById('current-date');
+        if (currentDateEl) {
+            currentDateEl.textContent = 'Date: ' + new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+            });
+        }
+
+        // Store medications in memory (not just from form)
+        let savedMedications = [];
+        
+        function updateMedicationsTable() {
+            const tbody = document.getElementById('medications-table-body');
+            const firstRow = document.querySelector('.medication-row');
+            
+            // Get current form values
+            let currentName = '';
+            let currentDosage = '';
+            let currentFrequency = '';
+            let currentInstructions = '';
+            let currentDuration = '';
+            
+            if (firstRow) {
+                currentName = firstRow.querySelector('.med-name').value.trim();
+                const dosageEl = firstRow.querySelector('.med-dosage');
+                currentDosage = dosageEl ? dosageEl.value : '';
+                const frequencyEl = firstRow.querySelector('.med-frequency');
+                currentFrequency = frequencyEl ? frequencyEl.value : '';
+                currentInstructions = firstRow.querySelector('.med-instructions').value.trim();
+                const durationEl = firstRow.querySelector('.med-duration');
+                currentDuration = durationEl ? durationEl.value : '';
+            }
+            
+            // Build table from saved medications + current form (if complete)
+            tbody.innerHTML = '';
+            
+            let medIndex = 0;
+            
+            // Add saved medications
+            savedMedications.forEach((med, idx) => {
+                medIndex = idx + 1;
+                const medWithIndex = {...med, isCurrent: false, arrayIndex: idx};
+                const tr = createMedicationTableRow(medWithIndex, medIndex);
+                tbody.appendChild(tr);
+            });
+            
+            // Add current form medication if complete (show in table but don't allow edit/remove until saved)
+            if (currentName && currentDosage && currentFrequency && currentDuration) {
+                medIndex++;
+                const currentMed = {
+                    name: currentName,
+                    dosage: currentDosage,
+                    frequency: currentFrequency,
+                    instructions: currentInstructions,
+                    duration: currentDuration,
+                    isCurrent: true
+                };
+                const tr = createMedicationTableRow(currentMed, medIndex);
+                tbody.appendChild(tr);
+            }
+            
+            if (tbody.children.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: #666;">No medications added yet. Fill the form above and click "Add Medication" to add.</td></tr>';
+            }
+        }
+        
+        function createMedicationTableRow(med, index) {
+            const tr = document.createElement('tr');
+            const bgColor = index % 2 === 0 ? '#fafbfc' : 'white';
+            tr.style.background = bgColor;
+            tr.style.transition = 'all 0.3s ease';
+            tr.onmouseover = function() {
+                this.style.background = 'linear-gradient(90deg, #f0f8ff 0%, #e8f4ff 100%)';
+                this.style.transform = 'scale(1.01)';
+                this.style.boxShadow = '0 2px 8px rgba(37, 117, 252, 0.15)';
+            };
+            tr.onmouseout = function() {
+                this.style.background = bgColor;
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            };
+            tr.innerHTML = `
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0; border-right: 2px solid #e0e0e0; font-weight: 600; color: #2575fc; white-space: nowrap;">${index}</td>
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0; border-right: 2px solid #e0e0e0; font-weight: 500; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${med.name || '-'}</td>
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0; border-right: 2px solid #e0e0e0; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">${med.dosage || '-'}</td>
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0; border-right: 2px solid #e0e0e0; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">${med.frequency || '-'}</td>
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0; border-right: 2px solid #e0e0e0; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">${med.instructions || '-'}</td>
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0; border-right: 2px solid #e0e0e0; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">${med.duration || '-'}</td>
+                <td style="padding: 14px 12px; border-bottom: 2px solid #e0e0e0;">
+                    ${med.isCurrent ? 
+                        '<span style="color: #666; font-size: 12px;">Click "Add Medication" to save</span>' :
+                        `<button type="button" class="remove-btn" onclick="editMedicationFromTable(${med.arrayIndex})" style="padding: 8px 12px; cursor: pointer; white-space: nowrap; margin-right: 5px; background: #2575fc;" title="Edit medication">
+                            <i class="fa-solid fa-edit"></i>
+                        </button>
+                        <button type="button" class="remove-btn" onclick="removeMedicationFromTable(${med.arrayIndex})" style="padding: 8px 12px; cursor: pointer; white-space: nowrap;" title="Remove medication">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>`
+                    }
+                </td>
+            `;
+            return tr;
+        }
+
+        function addMedication() {
+            const container = document.getElementById('medications-container');
+            const firstRow = container.querySelector('.medication-row');
+            
+            if (!firstRow) return;
+            
+            // Get current values
+            const name = firstRow.querySelector('.med-name').value.trim();
+            const dosage = firstRow.querySelector('.med-dosage').value;
+            const frequency = firstRow.querySelector('.med-frequency').value;
+            const instructions = firstRow.querySelector('.med-instructions').value.trim();
+            const duration = firstRow.querySelector('.med-duration').value;
+            
+            // If current row has valid data, save it and clear form
+            if (name && dosage && frequency && duration) {
+                // Save current medication to the list
+                savedMedications.push({
+                    name: name,
+                    dosage: dosage,
+                    frequency: frequency,
+                    instructions: instructions,
+                    duration: duration
+                });
+                
+                // Clear the form for next medication entry
+                firstRow.querySelector('.med-name').value = '';
+                firstRow.querySelector('.med-dosage').value = '';
+                firstRow.querySelector('.med-frequency').value = '';
+                firstRow.querySelector('.med-instructions').value = '';
+                firstRow.querySelector('.med-duration').value = '';
+                
+                // Update table (shows all saved medications)
+                updateMedicationsTable();
+                
+                // Focus on name field for next entry
+                firstRow.querySelector('.med-name').focus();
+            } else {
+                // If incomplete, alert and focus on first empty field
+                alert('Please fill in all required fields (Name, Dosage, Frequency, Duration)');
+                if (!name) firstRow.querySelector('.med-name').focus();
+                else if (!dosage) firstRow.querySelector('.med-dosage').focus();
+                else if (!frequency) firstRow.querySelector('.med-frequency').focus();
+                else if (!duration) firstRow.querySelector('.med-duration').focus();
+            }
+        }
+
+        function removeMedicationFromTable(index) {
+            if (index >= 0 && index < savedMedications.length) {
+                savedMedications.splice(index, 1);
+                updateMedicationsTable();
+            }
+        }
+
+        function editMedicationFromTable(index) {
+            // Check if it's a saved medication or current form
+            if (index >= 0 && index < savedMedications.length) {
+                const med = savedMedications[index];
+                const firstRow = document.querySelector('.medication-row');
+                
+                if (firstRow) {
+                    // Populate form with medication data
+                    firstRow.querySelector('.med-name').value = med.name || '';
+                    firstRow.querySelector('.med-dosage').value = med.dosage || '';
+                    firstRow.querySelector('.med-frequency').value = med.frequency || '';
+                    firstRow.querySelector('.med-instructions').value = med.instructions || '';
+                    firstRow.querySelector('.med-duration').value = med.duration || '';
+                    
+                    // Remove from saved list (will be re-added when user clicks "Add Medication")
+                    savedMedications.splice(index, 1);
+                    updateMedicationsTable();
+                    
+                    // Scroll to form and highlight
+                    firstRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstRow.style.border = '2px solid #2575fc';
+                    firstRow.style.boxShadow = '0 4px 10px rgba(37, 117, 252, 0.3)';
+                    
+                    setTimeout(() => {
+                        firstRow.style.border = '2px solid #e0e0e0';
+                        firstRow.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+                    }, 2000);
+                    
+                    firstRow.querySelector('.med-name').focus();
+                }
+            }
+        }
+
+        function clearCurrentMedication() {
+            const container = document.getElementById('medications-container');
+            const firstRow = container.querySelector('.medication-row');
+            if (firstRow) {
+                firstRow.querySelector('.med-name').value = '';
+                firstRow.querySelector('.med-dosage').value = '';
+                firstRow.querySelector('.med-frequency').value = '';
+                firstRow.querySelector('.med-instructions').value = '';
+                firstRow.querySelector('.med-duration').value = '';
+                updateMedicationsTable();
+                firstRow.querySelector('.med-name').focus();
+            }
+        }
+
+        function removeMedication(btn) {
+            // This function is kept for compatibility but shouldn't be used with single row
+            clearCurrentMedication();
+        }
+        
+        // Initialize table on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMedicationsTable();
+            
+            // Auto-populate current date
+            const dateInput = document.getElementById('prescription-date');
+            if (dateInput) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+        });
+
+        function getMedications() {
+            // Return all saved medications + current form medication if complete
+            const medications = [...savedMedications];
+            
+            const firstRow = document.querySelector('.medication-row');
+            if (firstRow) {
+                const name = firstRow.querySelector('.med-name').value.trim();
+                const dosageEl = firstRow.querySelector('.med-dosage');
+                const dosage = dosageEl ? dosageEl.value : '';
+                const frequencyEl = firstRow.querySelector('.med-frequency');
+                const frequency = frequencyEl ? frequencyEl.value : '';
+                const instructions = firstRow.querySelector('.med-instructions').value.trim();
+                const durationEl = firstRow.querySelector('.med-duration');
+                const duration = durationEl ? durationEl.value : '';
+                
+                if (name && dosage && frequency && duration) {
+                    medications.push({
+                        name: name,
+                        dosage: dosage,
+                        frequency: frequency,
+                        instructions: instructions,
+                        duration: duration
+                    });
+                }
+            }
+            
+            return medications;
+        }
+
+        async function savePrescription() {
+            const patientNameEl = document.getElementById('patient-name');
+            const patientEmailEl = document.getElementById('patient-email');
+            const ageEl = document.getElementById('patient-age');
+            const weightEl = document.getElementById('patient-weight');
+            const heightEl = document.getElementById('patient-height');
+            const genderEl = document.getElementById('patient-gender');
+            const diagnosisEl = document.getElementById('patient-diagnosis');
+            const notesEl = document.getElementById('notes');
+
+            if (!patientNameEl || !patientEmailEl || !ageEl || !weightEl || !heightEl || !genderEl || !diagnosisEl) {
+                alert('Form elements are missing on the page. Please reload.');
+                return;
+            }
+
+            const patientName = (patientNameEl.value || '').trim();
+            const patientEmail = (patientEmailEl.value || '').trim();
+            const age = ageEl.value;
+            const weight = weightEl.value;
+            const height = heightEl.value;
+            const gender = genderEl.value;
+            const diagnosis = (diagnosisEl.value || '').trim();
+            const notes = notesEl ? (notesEl.value || '').trim() : '';
+            const medications = getMedications();
+
+            if (!patientName || !patientEmail || !age) {
+                alert('Please fill in patient name, email, and age');
+                return;
+            }
+
+            // Validate email format
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(patientEmail)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            if (medications.length === 0) {
+                alert('Please add at least one medication with all required fields (Name, Dosage, Frequency, Duration)');
+                return;
+            }
+
+            try {
+                const response = await fetch('/save-prescription/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        patient_name: patientName,
+                        patient_email: patientEmail,
+                        age: parseInt(age),
+                        weight: weight ? parseFloat(weight) : null,
+                        height: height ? parseFloat(height) : null,
+                        gender: gender,
+                        diagnosis: diagnosis,
+                        notes: notes,
+                        medications: medications,
+                        send_email: (document.getElementById('send-email-checkbox') || {checked: true}).checked
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    if (data.warning) {
+                        alert('Prescription saved! ' + data.message);
+                    } else {
+                        alert('Prescription saved and email sent successfully to ' + patientEmail + '!');
+                    }
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to save prescription'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function sendPrescription() {
+            await savePrescription();
+            alert('Prescription sent to patient via email!');
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            if (!cookieValue) {
+                const hiddenCsrf = document.getElementById('csrf-token');
+                if (hiddenCsrf && hiddenCsrf.value) {
+                    cookieValue = hiddenCsrf.value;
+                }
+            }
+            return cookieValue;
+        }
+
+        // Appointment Management
+        async function updateAppointmentStatus(appointmentId, status) {
+            if (!confirm(`Are you sure you want to ${status === 'confirmed' ? 'accept' : status === 'cancelled' ? 'reject' : 'mark as complete'} this appointment?`)) {
+                return;
+            }
+            
+            try {
+                const csrftoken = getCookie('csrftoken');
+                const response = await fetch('/update-appointment/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        appointment_id: appointmentId,
+                        status: status
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error updating appointment: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

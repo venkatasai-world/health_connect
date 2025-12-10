@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Shop Login</title>
+
+    <link rel="stylesheet" href="{% static 'loginm.css' %}">
+</head>
+
+<body>
+
+<div class="page-bg">
+    <div class="login-card">
+
+        <!-- LEFT SIDE IMAGE -->
+        <div class="left-side">
+            <img src="{% static 'image22.png' %}" alt="Medical Shop Illustration">
+        </div>
+
+        <!-- RIGHT SIDE FORM -->
+        <div class="right-side">
+            <h2>Medical Shop Login</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: {% if message.tags == 'error' %}red{% else %}green{% endif %}; color: white; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label>E-mail</label>
+                <input type="email" name="email" placeholder="medicalshop@example.com" required>
+
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter password" required>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 15px;">
+                Don't have an account? <a href="{% url 'registerMedical' %}" style="text-decoration: none; color: #2575fc;">Register here</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

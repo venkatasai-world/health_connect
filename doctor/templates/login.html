@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login</title>
+
+    <link rel="stylesheet" href="{% static 'dlogin.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+<header class="top-nav">
+    <div class="brand">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <!-- <span>EHealth Connect</span> -->
+    </div>
+    <!-- <nav class="nav-links">
+        <a href="#" class="nav-pill"><i class="fa-solid fa-user-doctor"></i> Doctor</a>
+        <a href="#" class="nav-pill"><i class="fa-solid fa-notes-medical"></i> MediCheck</a>
+        <a href="#" class="nav-pill"><i class="fa-solid fa-store"></i> Shop</a>
+        <a href="#" class="nav-pill"><i class="fa-solid fa-user"></i> User</a>
+    </nav> -->
+</header>
+
+<div class="page-bg">
+    <div class="login-card">
+
+        <!-- LEFT IMAGE -->
+        <div class="left-side">
+            <img src="{% static 'image.png' %}" alt="Doctor Illustration">
+        </div>
+
+        <!-- RIGHT LOGIN FORM -->
+        <div class="right-side">
+            <h2>Doctor Login</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'doctorLogin' %}">
+                {% csrf_token %}
+
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="doctor@hospital.com" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <!-- Register Link -->
+            <div class="nooo">
+                <p class="register-text" style="text-align: center; margin-top: 20px;">
+                    Don't have an account? <br>
+                    <a style="text-decoration: none; color: #2575fc; font-weight: 600;" href="{% url 'register' %}">Register here</a>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

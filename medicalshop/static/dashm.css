@@ -1,0 +1,146 @@
+/* dashm.css - place in static/ */
+:root{
+  --bg: #f4fbff;
+  --card: #ffffff;
+  --accent: #1e8e33;        /* you asked earlier: #1e8e33 */
+  --lightblue: #e9f6ff;    /* requested light blue */
+  --muted: #6b7280;
+}
+
+/* reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: "Poppins", "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg,var(--lightblue), #ffffff 40%);
+  color:#1b2330;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* NAVBAR */
+.navbar{
+  width:100%;
+  background: linear-gradient(90deg,#4b2bd6,#6a11cb);
+  color:white;
+  box-shadow: 0 2px 8px rgba(18,24,40,0.08);
+  position: sticky;
+  top:0;
+  z-index:100;
+}
+.nav-inner{
+  max-width:1150px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 20px;
+}
+.logo{height:36px; width:auto}
+
+/* center nav links */
+.nav-center{flex:1; display:flex; justify-content:center}
+.nav-links{list-style:none; display:flex; gap:28px; align-items:center}
+.nav-links a{
+  color:white;
+  text-decoration:none;
+  font-weight:600;
+  padding:6px 10px;
+  border-radius:6px;
+  transition: background .18s, transform .12s;
+}
+.nav-links a:hover{background: rgba(255,255,255,0.08); transform:translateY(-2px)}
+
+/* header below navbar (centered shop name + address) */
+.shop-header{
+  text-align:center;
+  padding:26px 12px;
+  background: transparent;
+}
+.shop-title{
+  font-size:28px;
+  margin-bottom:6px;
+  color:#0b2340;
+  font-weight:700;
+}
+.shop-sub{
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* MAIN container */
+.container{
+  max-width:1150px;
+  margin:18px auto 80px;
+  padding:18px;
+}
+
+/* title & actions */
+.title{
+  font-size:20px;
+  margin-bottom:12px;
+  color:#0b2a3f;
+  font-weight:700;
+}
+.top-actions{
+  display:flex;
+  gap:12px;
+  margin-bottom:16px;
+}
+.btn{
+  padding:10px 14px;
+  border-radius:8px;
+  border: none;
+  cursor:pointer;
+  font-weight:600;
+  box-shadow:0 6px 18px rgba(16,24,40,0.06);
+}
+.btn.add{
+  background: linear-gradient(90deg,var(--accent), #2fb36a);
+  color:white;
+}
+.btn.update{
+  background: white;
+  color:var(--accent);
+  border:1px solid rgba(16,24,40,0.06);
+}
+
+/* table wrap for scrolling on small screens */
+.table-wrap{
+  background: white;
+  border-radius:12px;
+  padding:10px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.04);
+  overflow:auto;
+}
+
+/* table */
+.med-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:800px;
+}
+.med-table thead th{
+  text-align:left;
+  padding:14px 12px;
+  border-bottom: 1px solid rgba(16,24,40,0.06);
+  background: linear-gradient(180deg,#fbfdff,#f7fbff);
+  font-weight:700;
+  color:#0b2a3f;
+}
+.med-table tbody td{
+  padding:12px;
+  border-bottom:1px solid rgba(16,24,40,0.03);
+  color:#263244;
+}
+
+/* highlight alert row */
+.alert-row{ background: linear-gradient(90deg, rgba(255,244,240,0.6), transparent); }
+.exp-alert{ color:#a33; font-weight:700; }
+
+/* responsive */
+@media (max-width:900px){
+  .nav-inner{padding:10px}
+  .nav-links{gap:14px}
+  .container{padding:12px}
+  .med-table{min-width:600px}
+}

@@ -1,0 +1,1008 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prescription Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
+            background: #daf0ff;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .container {
+            background: white;
+        }
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px;
+            border-radius: 10px;
+        }
+        .nav-button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .nav-button.active {
+            background: white;
+            color: #2575fc;
+            font-weight: 600;
+        }
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        main {
+            padding: 30px;
+            color: #333;
+        }
+        .app-section {
+            display: none;
+        }
+        .app-section.active {
+            display: block;
+        }
+        .section-title {
+            text-align: center;
+            color: #2575fc;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .drop-zone {
+            border: 2px dashed #2575fc;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(37, 117, 252, 0.05);
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+        .drop-zone:hover {
+            background: rgba(37, 117, 252, 0.1);
+            border-color: #6a11cb;
+        }
+        .drop-zone i {
+            font-size: 48px;
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        .browse-btn {
+            background: #2575fc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        .browse-btn:hover {
+            background: #6a11cb;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #2575fc;
+        }
+        .analyze-btn {
+            background: #ffe600;
+            color: #000;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .analyze-btn:hover {
+            background: #000;
+            color: #ffe600;
+        }
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error-message.show {
+            display: block !important;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #2575fc;
+            display: none;
+        }
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .analysis-result {
+            background: rgba(37, 117, 252, 0.05);
+            border: 2px solid #2575fc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            min-height: 200px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 2px solid #2575fc;
+            background: white;
+            color: #2575fc;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .nav-btn:hover {
+            background: #2575fc;
+            color: white;
+        }
+        .nav-btn.primary {
+            background: #2575fc;
+            color: white;
+        }
+        .nav-btn.primary:hover {
+            background: #6a11cb;
+        }
+        .chat-window {
+            height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 15px;
+        }
+        .chat-message.user .message-bubble {
+            background: #2575fc;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        .chat-message.ai .message-bubble {
+            background: #e0e0e0;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 15px;
+        }
+        .chat-input:focus {
+            outline: none;
+            border-color: #2575fc;
+        }
+        .send-btn {
+            background: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .send-btn:hover {
+            background: #6a11cb;
+        }
+        .reminders-list {
+            margin-top: 20px;
+        }
+        .reminder-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .add-reminder-btn {
+            background: #2575fc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .add-reminder-btn:hover {
+            background: #6a11cb;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-content h3 {
+            color: #2575fc;
+            margin-bottom: 20px;
+        }
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .days-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .day-checkbox {
+            display: none;
+        }
+        .day-label {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .day-checkbox:checked + .day-label {
+            background: #2575fc;
+            color: white;
+            border-color: #2575fc;
+        }
+        .suggested-reminders {
+            background: rgba(255, 230, 0, 0.1);
+            border: 2px solid #ffe600;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .suggested-reminders button {
+            background: #ffe600;
+            color: #000;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .suggested-reminders button:hover {
+            background: #000;
+            color: #ffe600;
+        }
+        footer {
+            background: rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-notes-medical"></i> AI Prescription Assistant</h1>
+            <nav class="nav-tabs">
+                <button class="nav-button active" data-target="upload-section">
+                    <i class="fa-solid fa-upload"></i> Upload
+                </button>
+                <button class="nav-button" data-target="analysis-section" disabled>
+                    <i class="fa-solid fa-notes-medical"></i> Analysis
+                </button>
+                <button class="nav-button" data-target="chat-section" disabled>
+                    <i class="fa-solid fa-comments"></i> Chat
+                </button>
+                <button class="nav-button" data-target="reminders-section">
+                    <i class="fa-solid fa-bell"></i> Reminders
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section id="upload-section" class="app-section active">
+                <h2 class="section-title">Upload or Enter Prescription</h2>
+                <p class="section-subtitle">Upload your prescription image or type the details below.</p>
+
+                <form id="upload-form">
+                    {% csrf_token %}
+                    <div class="drop-zone" id="drop-zone">
+                        <input type="file" id="prescription-image" name="prescription_image" accept=".jpg,.jpeg,.png,.webp" style="display: none;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p><strong>Drag & drop</strong> your prescription image here</p>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">Supports JPG, PNG, WEBP up to 10MB</p>
+                        <button type="button" class="browse-btn" id="browse-button">Browse Files</button>
+                        <p id="file-name-display" style="margin-top: 10px; font-style: italic; color: #666;"></p>
+                    </div>
+
+                    <div style="text-align: center; margin: 20px 0; color: #666;">
+                        <span style="flex-grow: 1; border-top: 1px solid #ccc; display: inline-block; width: 40%;"></span>
+                        <span style="margin: 0 15px;">OR</span>
+                        <span style="flex-grow: 1; border-top: 1px solid #ccc; display: inline-block; width: 40%;"></span>
+                    </div>
+
+                    <textarea id="prescription-text" name="prescription_text" rows="5" placeholder="Type or paste your prescription details here... e.g., Paracetamol 500mg - 1 tablet every 6 hours"></textarea>
+
+                    <div class="error-message" id="upload-error"></div>
+                    <div class="loading" id="loading-indicator">
+                        <i class="fa-solid fa-spinner"></i> Analyzing... Please wait.
+                    </div>
+
+                    <button type="submit" class="analyze-btn">
+                        Analyze Prescription <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis-section" class="app-section">
+                <h2 class="section-title">Prescription Analysis</h2>
+                <div class="error-message" id="analysis-error"></div>
+                <div class="analysis-result" id="analysis-result">
+                    <p style="color: #666; font-style: italic;">Analysis results will appear here...</p>
+                </div>
+                <div id="suggested-reminders" class="suggested-reminders" style="display: none;"></div>
+                <div class="nav-buttons">
+                    <button class="nav-btn" data-target="upload-section">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Upload
+                    </button>
+                    <button class="nav-btn primary" data-target="chat-section">
+                        Chat with AI <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chat-section" class="app-section">
+                <h2 class="section-title">Chat with AI Assistant</h2>
+                <p class="section-subtitle">Ask questions about your medications, dosage, or side effects.</p>
+                <div class="error-message" id="chat-error"></div>
+                <div class="chat-window" id="chat-window">
+                    <div class="chat-message ai">
+                        <div class="message-bubble">
+                            Hello! I'm your AI prescription assistant. Ask me anything about the analysis provided. Remember, I cannot give medical advice.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Type your message...">
+                    <button class="send-btn" id="send-chat-button">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn" data-target="analysis-section">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Analysis
+                    </button>
+                    <button class="nav-btn primary" data-target="reminders-section">
+                        Set Reminders <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Reminders Section -->
+            <section id="reminders-section" class="app-section">
+                <h2 class="section-title">Medication Reminders</h2>
+                <p class="section-subtitle">Set up reminders to take your medications on time.</p>
+                <button class="add-reminder-btn" id="add-reminder-button">
+                    <i class="fa-solid fa-plus"></i> Add Reminder
+                </button>
+                <div id="reminders-list" class="reminders-list">
+                    <p id="no-reminders" style="text-align: center; color: #666; font-style: italic; padding: 20px;">No reminders set yet.</p>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn" data-target="chat-section">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Chat
+                    </button>
+                    <button class="nav-btn" data-target="upload-section">
+                        <i class="fa-solid fa-upload"></i> New Upload
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Disclaimer: This tool is AI-powered and for informational purposes only. Always consult a healthcare professional for medical advice.</p>
+        </footer>
+    </div>
+
+    <!-- Add Reminder Modal -->
+    <div class="modal" id="add-reminder-modal">
+        <div class="modal-content">
+            <h3>Add New Reminder</h3>
+            <form id="add-reminder-form">
+                <input type="text" id="med-name-input" placeholder="Medication Name" required>
+                <input type="time" id="med-time-input" required>
+                <div class="days-selector">
+                    <input type="checkbox" id="day-mon" class="day-checkbox" value="Mon">
+                    <label for="day-mon" class="day-label">Mon</label>
+                    <input type="checkbox" id="day-tue" class="day-checkbox" value="Tue">
+                    <label for="day-tue" class="day-label">Tue</label>
+                    <input type="checkbox" id="day-wed" class="day-checkbox" value="Wed">
+                    <label for="day-wed" class="day-label">Wed</label>
+                    <input type="checkbox" id="day-thu" class="day-checkbox" value="Thu">
+                    <label for="day-thu" class="day-label">Thu</label>
+                    <input type="checkbox" id="day-fri" class="day-checkbox" value="Fri">
+                    <label for="day-fri" class="day-label">Fri</label>
+                    <input type="checkbox" id="day-sat" class="day-checkbox" value="Sat">
+                    <label for="day-sat" class="day-label">Sat</label>
+                    <input type="checkbox" id="day-sun" class="day-checkbox" value="Sun">
+                    <label for="day-sun" class="day-label">Sun</label>
+                </div>
+                <button type="submit" class="analyze-btn">Save Reminder</button>
+                <button type="button" class="nav-btn" onclick="closeModal()" style="margin-top: 10px;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.app-section');
+            const uploadForm = document.getElementById('upload-form');
+            const prescriptionImageInput = document.getElementById('prescription-image');
+            const prescriptionTextInput = document.getElementById('prescription-text');
+            const fileNameDisplay = document.getElementById('file-name-display');
+            const dropZone = document.getElementById('drop-zone');
+            const browseButton = document.getElementById('browse-button');
+            const uploadErrorDiv = document.getElementById('upload-error');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const analysisResultDiv = document.getElementById('analysis-result');
+            const analysisErrorDiv = document.getElementById('analysis-error');
+            const suggestedRemindersDiv = document.getElementById('suggested-reminders');
+            const chatWindow = document.getElementById('chat-window');
+            const chatInput = document.getElementById('chat-input');
+            const sendChatButton = document.getElementById('send-chat-button');
+            const chatErrorDiv = document.getElementById('chat-error');
+            const remindersListDiv = document.getElementById('reminders-list');
+            const noRemindersMessage = document.getElementById('no-reminders');
+            const addReminderButton = document.getElementById('add-reminder-button');
+            const reminderModal = document.getElementById('add-reminder-modal');
+            const addReminderForm = document.getElementById('add-reminder-form');
+            const medNameInput = document.getElementById('med-name-input');
+            const medTimeInput = document.getElementById('med-time-input');
+
+            let chatHistory = [];
+            let reminders = JSON.parse(localStorage.getItem('medReminders') || '[]');
+            let currentImageSummary = null;
+
+            function getCsrfToken() {
+                const token = document.querySelector('[name=csrfmiddlewaretoken]');
+                if (token) return token.value;
+                // Fallback: get from cookies
+                const name = 'csrftoken';
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            function convertAmPmTo24Hour(timeStr) {
+                if (!timeStr || !timeStr.match(/\d{1,2}:\d{2} (?:AM|PM)/i)) return null;
+                const [time, modifier] = timeStr.split(' ');
+                let [hours, minutes] = time.split(':');
+                if (hours === '12') hours = '00';
+                if (modifier.toUpperCase() === 'PM') hours = parseInt(hours, 10) + 12;
+                hours = String(hours).padStart(2, '0');
+                minutes = String(minutes).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+
+            function switchSection(targetId) {
+                // Hide all sections first
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                });
+                
+                // Show target section
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    targetSection.style.display = 'block';
+                }
+                
+                // Update button states
+                navButtons.forEach(button => {
+                    const isTarget = button.dataset.target === targetId;
+                    button.classList.toggle('active', isTarget);
+                });
+                
+                if (targetId === 'upload-section') {
+                    const analysisBtn = document.querySelector('.nav-button[data-target="analysis-section"]');
+                    const chatBtn = document.querySelector('.nav-button[data-target="chat-section"]');
+                    if (analysisBtn) {
+                        analysisBtn.disabled = true;
+                        analysisBtn.style.opacity = '0.5';
+                    }
+                    if (chatBtn) {
+                        chatBtn.disabled = true;
+                        chatBtn.style.opacity = '0.5';
+                    }
+                    if (analysisResultDiv) {
+                        analysisResultDiv.innerHTML = '<p style="color: #666; font-style: italic;">Analysis results will appear here...</p>';
+                    }
+                    if (analysisErrorDiv) analysisErrorDiv.style.display = 'none';
+                    if (uploadErrorDiv) uploadErrorDiv.style.display = 'none';
+                    if (chatErrorDiv) chatErrorDiv.style.display = 'none';
+                    if (suggestedRemindersDiv) {
+                        suggestedRemindersDiv.style.display = 'none';
+                        suggestedRemindersDiv.innerHTML = '';
+                    }
+                    currentImageSummary = null;
+                }
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (!button.disabled) switchSection(button.dataset.target);
+                });
+            });
+
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', () => switchSection(button.dataset.target));
+            });
+
+            browseButton.addEventListener('click', () => prescriptionImageInput.click());
+            prescriptionImageInput.addEventListener('change', handleFileSelect);
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.background = 'rgba(37, 117, 252, 0.15)';
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.background = 'rgba(37, 117, 252, 0.05)';
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.background = 'rgba(37, 117, 252, 0.05)';
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    prescriptionImageInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            function handleFileSelect() {
+                const file = prescriptionImageInput.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        fileNameDisplay.textContent = 'Error: File size exceeds 10MB.';
+                        fileNameDisplay.style.color = '#ff4444';
+                        prescriptionImageInput.value = '';
+                        return;
+                    }
+                    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                        fileNameDisplay.textContent = 'Error: Invalid file type (JPG, PNG, WEBP only).';
+                        fileNameDisplay.style.color = '#ff4444';
+                        prescriptionImageInput.value = '';
+                        return;
+                    }
+                    fileNameDisplay.textContent = `Selected: ${file.name}`;
+                    fileNameDisplay.style.color = '#666';
+                } else {
+                    fileNameDisplay.textContent = '';
+                }
+            }
+
+            uploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                uploadErrorDiv.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                analysisResultDiv.innerHTML = '<p style="color: #666; font-style: italic;">Generating analysis...</p>';
+                analysisErrorDiv.style.display = 'none';
+                suggestedRemindersDiv.style.display = 'none';
+                suggestedRemindersDiv.innerHTML = '';
+
+                const formData = new FormData();
+                const csrfToken = getCsrfToken();
+                if (prescriptionImageInput.files[0]) {
+                    formData.append('prescription_image', prescriptionImageInput.files[0]);
+                }
+                if (prescriptionTextInput.value.trim()) {
+                    formData.append('prescription_text', prescriptionTextInput.value.trim());
+                }
+
+                if (!prescriptionImageInput.files[0] && !prescriptionTextInput.value.trim()) {
+                    uploadErrorDiv.textContent = 'Please upload an image or enter prescription text.';
+                    uploadErrorDiv.style.display = 'block';
+                    loadingIndicator.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/analyze-prescription/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                    if (data.error) throw new Error(data.error);
+
+                    currentImageSummary = data.image_summary || null;
+                    analysisResultDiv.innerHTML = marked.parse(data.analysis || 'No analysis data received.');
+                    analysisErrorDiv.style.display = 'none';
+
+                    if (data.reminder_times && data.reminder_times.length > 0) {
+                        suggestedRemindersDiv.innerHTML = '<h4 style="font-weight: 600; margin-bottom: 10px; color: #333;">Suggested Reminders:</h4>';
+                        const buttonGroup = document.createElement('div');
+                        buttonGroup.style.display = 'flex';
+                        buttonGroup.style.flexWrap = 'wrap';
+                        buttonGroup.style.gap = '10px';
+                        data.reminder_times.forEach(timeStr => {
+                            const time24 = convertAmPmTo24Hour(timeStr);
+                            if (time24) {
+                                const button = document.createElement('button');
+                                button.textContent = `Add Reminder for ${timeStr}`;
+                                button.className = 'suggested-reminders button';
+                                button.style.cssText = 'background: #ffe600; color: #000; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;';
+                                button.onclick = () => openAddReminderModalWithTime(time24);
+                                buttonGroup.appendChild(button);
+                            }
+                        });
+                        suggestedRemindersDiv.appendChild(buttonGroup);
+                        suggestedRemindersDiv.style.display = 'block';
+                    } else {
+                        suggestedRemindersDiv.style.display = 'none';
+                    }
+
+                    // Enable buttons and make them clickable
+                    const analysisBtn = document.querySelector('.nav-button[data-target="analysis-section"]');
+                    const chatBtn = document.querySelector('.nav-button[data-target="chat-section"]');
+                    if (analysisBtn) {
+                        analysisBtn.disabled = false;
+                        analysisBtn.removeAttribute('disabled');
+                        analysisBtn.style.opacity = '1';
+                        analysisBtn.style.cursor = 'pointer';
+                        analysisBtn.style.pointerEvents = 'auto';
+                    }
+                    if (chatBtn) {
+                        chatBtn.disabled = false;
+                        chatBtn.removeAttribute('disabled');
+                        chatBtn.style.opacity = '1';
+                        chatBtn.style.cursor = 'pointer';
+                        chatBtn.style.pointerEvents = 'auto';
+                    }
+                    // Switch to analysis section
+                    setTimeout(() => {
+                        switchSection('analysis-section');
+                    }, 100);
+
+                } catch (error) {
+                    console.error('Analysis Error:', error);
+                    if (analysisResultDiv) {
+                        analysisResultDiv.innerHTML = '';
+                    }
+                    if (analysisErrorDiv) {
+                        analysisErrorDiv.textContent = `Analysis failed: ${error.message}`;
+                        analysisErrorDiv.style.display = 'block';
+                        analysisErrorDiv.classList.add('show');
+                    }
+                    if (uploadErrorDiv) {
+                        uploadErrorDiv.textContent = `Analysis failed: ${error.message}`;
+                        uploadErrorDiv.style.display = 'block';
+                        uploadErrorDiv.classList.add('show');
+                    }
+                } finally {
+                    if (loadingIndicator) loadingIndicator.style.display = 'none';
+                }
+            });
+
+            function addChatMessage(role, text, reminderDetails = null) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${role}`;
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = 'message-bubble';
+                if (role === 'user') {
+                    bubbleDiv.textContent = text;
+                } else {
+                    bubbleDiv.innerHTML = marked.parse(text);
+                }
+                messageDiv.appendChild(bubbleDiv);
+                chatWindow.appendChild(messageDiv);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+
+            async function handleChatSubmit() {
+                const userMessage = chatInput.value.trim();
+                if (!userMessage) return;
+
+                addChatMessage('user', userMessage);
+                chatInput.value = '';
+                chatErrorDiv.style.display = 'none';
+
+                chatHistory.push({ role: 'user', parts: [userMessage] });
+
+                const thinkingDiv = document.createElement('div');
+                thinkingDiv.className = 'chat-message ai';
+                thinkingDiv.innerHTML = '<div class="message-bubble"><em>Thinking...</em></div>';
+                chatWindow.appendChild(thinkingDiv);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                try {
+                    const csrfToken = getCsrfToken();
+                    const response = await fetch('/chat-prescription/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            message: userMessage,
+                            history: chatHistory.slice(0, -1),
+                            image_summary: currentImageSummary
+                        })
+                    });
+
+                    thinkingDiv.remove();
+                    const data = await response.json();
+
+                    if (!response.ok) throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                    if (data.error) throw new Error(data.error);
+
+                    const reminderDetails = (data.reminder_time && data.reminder_medication)
+                        ? { time: data.reminder_time, medication: data.reminder_medication }
+                        : null;
+
+                    addChatMessage('ai', data.reply || 'Sorry, I could not process that.', reminderDetails);
+
+                    chatHistory.push({ role: 'model', parts: [data.reply || ''] });
+                    if (chatHistory.length > 20) {
+                        chatHistory = chatHistory.slice(-20);
+                    }
+
+                } catch (error) {
+                    console.error('Chat Error:', error);
+                    if (chatErrorDiv) {
+                        chatErrorDiv.textContent = `Chat failed: ${error.message}`;
+                        chatErrorDiv.style.display = 'block';
+                        chatErrorDiv.classList.add('show');
+                    }
+                    if (thinkingDiv) thinkingDiv.remove();
+                    addChatMessage('ai', `😟 Sorry, an error occurred: ${error.message}`);
+                }
+            }
+
+            sendChatButton.addEventListener('click', handleChatSubmit);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleChatSubmit();
+                }
+            });
+
+            function formatTime(timeString24) {
+                if (!timeString24 || !timeString24.includes(':')) return '';
+                const [hours, minutes] = timeString24.split(':');
+                const hoursInt = parseInt(hours, 10);
+                const ampm = hoursInt >= 12 ? 'PM' : 'AM';
+                const formattedHours = hoursInt % 12 || 12;
+                return `${formattedHours}:${minutes} ${ampm}`;
+            }
+
+            function renderReminders() {
+                remindersListDiv.innerHTML = '';
+                if (reminders.length === 0) {
+                    noRemindersMessage.style.display = 'block';
+                    return;
+                }
+                noRemindersMessage.style.display = 'none';
+
+                reminders.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+
+                reminders.forEach((reminder) => {
+                    const reminderItem = document.createElement('div');
+                    reminderItem.className = 'reminder-item';
+                    const activeDays = reminder.days || [];
+                    const daysHTML = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        .map(day => `<span style="padding: 5px 10px; border-radius: 15px; font-size: 12px; ${activeDays.includes(day) ? 'background: #2575fc; color: white;' : 'background: #e0e0e0; color: #666;'}">${day}</span>`)
+                        .join('');
+
+                    reminderItem.innerHTML = `
+                        <div>
+                            <strong>${reminder.name || 'Unnamed'}</strong>
+                            <p style="color: #666; margin-top: 5px;">${formatTime(reminder.time)}</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            ${daysHTML}
+                            <button class="delete-reminder-btn" data-id="${reminder.id}" style="background: #ff4444; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer;">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    remindersListDiv.appendChild(reminderItem);
+                });
+
+                document.querySelectorAll('.delete-reminder-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const reminderId = e.target.closest('.delete-reminder-btn').dataset.id;
+                        reminders = reminders.filter(r => r.id !== reminderId);
+                        saveReminders();
+                        renderReminders();
+                    });
+                });
+            }
+
+            function saveReminders() {
+                localStorage.setItem('medReminders', JSON.stringify(reminders));
+            }
+
+            function openModal() {
+                addReminderForm.reset();
+                document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = false);
+                reminderModal.classList.add('active');
+            }
+
+            function openAddReminderModalWithTime(time24) {
+                openModal();
+                if (time24) medTimeInput.value = time24;
+            }
+
+            function closeModal() {
+                reminderModal.classList.remove('active');
+            }
+
+            addReminderButton.addEventListener('click', openModal);
+            reminderModal.addEventListener('click', (e) => {
+                if (e.target === reminderModal) closeModal();
+            });
+
+            addReminderForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const medName = medNameInput.value;
+                const medTime = medTimeInput.value;
+                const selectedDays = [];
+                document.querySelectorAll('.day-checkbox:checked').forEach(checkbox => {
+                    selectedDays.push(checkbox.value);
+                });
+
+                if (!medName || !medTime || selectedDays.length === 0) {
+                    alert('Please fill in medication name, time, and select at least one day.');
+                    return;
+                }
+
+                const newReminder = {
+                    id: Date.now().toString(),
+                    name: medName,
+                    time: medTime,
+                    days: selectedDays,
+                    enabled: true
+                };
+
+                reminders.push(newReminder);
+                saveReminders();
+                renderReminders();
+                closeModal();
+            });
+
+            // Initialize: show upload section, hide others
+            switchSection('upload-section');
+            renderReminders();
+            
+            // Debug: Log when buttons are clicked
+            console.log('AI Assistant initialized');
+        });
+    </script>
+</body>
+</html>
+

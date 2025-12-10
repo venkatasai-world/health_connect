@@ -1,0 +1,700 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{% static 'dashu.css' %}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-header h1 {
+            color: #2575fc;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-header p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.2);
+            border-color: #2575fc;
+        }
+
+        .feature-card i {
+            font-size: 48px;
+            color: #2575fc;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            color: #2575fc;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .feature-btn {
+            background: #2575fc;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .feature-btn:hover {
+            background: #6a11cb;
+        }
+
+        .feature-btn.yellow {
+            background: #ffe600;
+            color: #000;
+        }
+
+        .feature-btn.yellow:hover {
+            background: #000;
+            color: #ffe600;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #2575fc;
+        }
+
+        /* Global cursor styles */
+        button,
+        a,
+        input[type="submit"],
+        select,
+        .clickable {
+            cursor: pointer !important;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        textarea {
+            cursor: text !important;
+        }
+
+        table tbody tr {
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="{% url 'userLogout' %}" class="logout-btn">Logout</a>
+
+    <div class="dashboard-container">
+        <div class="welcome-header">
+            <h1>Welcome, {{ request.session.user_name|default:"User" }}!</h1>
+            <p>Your HealthConnect Dashboard</p>
+        </div>
+
+        <!-- Medicine Search Section -->
+        <div id="medicine-search-section"
+            style="background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #2575fc; margin: 0;"><i class="fa-solid fa-search"></i> Search for Medicines</h2>
+                <button onclick="showDashboard()" class="back-btn"
+                    style="display: none; padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </button>
+            </div>
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <input type="text" id="medicine-search-input"
+                    placeholder="Enter medicine name (e.g., Paracetamol, Amoxicillin)"
+                    style="flex: 1; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px;">
+                <button onclick="searchMedicine()"
+                    style="padding: 15px 30px; background: #2575fc; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 16px;">
+                    <i class="fa-solid fa-search"></i> Search
+                </button>
+            </div>
+            <div id="search-results" style="display: none;">
+                <h3 style="color: #2575fc; margin-bottom: 15px;">Search Results</h3>
+                <div id="results-container"></div>
+            </div>
+        </div>
+
+
+        <!-- Matched Medicines from Prescriptions -->
+        <!-- Matched Medicines from Prescriptions -->
+        {% if matched_medicines %}
+        <div id="matched-medicines-section"
+            style="background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <h2 style="color: #2575fc; margin-bottom: 20px;"><i class="fa-solid fa-check-circle"></i> Available
+                Medicines from Your Prescriptions</h2>
+            <div style="overflow-x: auto;">
+                <table
+                    style="width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #2575fc;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                            <th
+                                style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">
+                                Medicine</th>
+                            <th
+                                style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">
+                                Shop Name</th>
+                            <th
+                                style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">
+                                Location</th>
+                            <th
+                                style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">
+                                Quantity</th>
+                            <th
+                                style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">
+                                Price</th>
+                            <th
+                                style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.3);">
+                                Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in matched_medicines %}
+                        <tr
+                            style="border-bottom: 2px solid #e0e0e0; background: {% if forloop.counter|divisibleby:2 %}#fafbfc{% else %}white{% endif %};">
+                            <td style="padding: 14px 12px; border-right: 2px solid #e0e0e0; font-weight: 500;">{{
+                                match.medicine_name }}</td>
+                            <td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">{{ match.shop.shop_name }}
+                            </td>
+                            <td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">{{ match.shop.location }}
+                            </td>
+                            <td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">{{ match.medicine.quantity
+                                }}</td>
+                            <td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">₹{{ match.medicine.price }}
+                            </td>
+                            <td style="padding: 14px 12px;">
+                                <button
+                                    onclick="placeOrder({{ match.medicine.id }}, {{ match.shop.id }}, '{{ match.medicine_name|escapejs }}', '{{ match.shop.shop_name|escapejs }}', {{ match.medicine.price }})"
+                                    style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                                    <i class="fa-solid fa-shopping-cart"></i> Place Order
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <div id="features-nav" class="features-grid">
+            <div class="feature-card">
+                <i class="fa-solid fa-notes-medical"></i>
+                <h3>AI Prescription Assistant</h3>
+                <p>Upload your prescription or enter details to get AI-powered analysis and medication reminders.</p>
+                <a href="{% url 'aiAssistant' %}" class="feature-btn yellow">
+                    <i class="fa-solid fa-arrow-right"></i> Open Assistant
+                </a>
+            </div>
+
+            <div class="feature-card" onclick="showSection('prescriptions-section')">
+                <i class="fa-solid fa-prescription"></i>
+                <h3>My Prescriptions</h3>
+                <p>View all your prescriptions from doctors.</p>
+                <button class="feature-btn" style="background: #ffe600; color: #000;">{{ prescriptions|length }}
+                    Prescription{{ prescriptions|length|pluralize }}</button>
+            </div>
+
+            <div class="feature-card">
+                <i class="fa-solid fa-calendar"></i>
+                <h3>Book Appointment</h3>
+                <p>Schedule and manage your medical appointments with registered doctors.</p>
+                <button class="feature-btn" onclick="openAppointmentModal()">
+                    <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+                </button>
+            </div>
+        </div>
+
+        <!-- My Appointments -->
+        {% if appointments %}
+        <div id="appointments-section" style="margin-top: 40px;">
+            <h2 style="color: #2575fc; margin-bottom: 20px;"><i class="fa-solid fa-calendar-check"></i> My Appointments
+            </h2>
+            {% for appointment in appointments %}
+            <div
+                style="background: white; border: 2px solid #e0e0e0; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="color: #2575fc; margin-bottom: 10px;">Appointment #{{ appointment.id }}</h3>
+                        <p><strong>Doctor:</strong> Dr. {{ appointment.doctor.name }}</p>
+                        <p><strong>Date:</strong> {{ appointment.appointment_date|date:"F d, Y" }}</p>
+                        <p><strong>Time:</strong> {{ appointment.appointment_time|time:"g:i A" }}</p>
+                        <p><strong>Status:</strong>
+                            <span
+                                style="padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; 
+                                background: {% if appointment.status == 'confirmed' %}#28a745{% elif appointment.status == 'completed' %}#6c757d{% elif appointment.status == 'cancelled' %}#ff4444{% else %}#ffe600{% endif %}; 
+                                color: {% if appointment.status == 'cancelled' or appointment.status == 'completed' %}white{% else %}#000{% endif %};">
+                                {{ appointment.get_status_display }}
+                            </span>
+                        </p>
+                        {% if appointment.reason %}<p><strong>Reason:</strong> {{ appointment.reason }}</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if prescriptions %}
+        <div id="prescriptions-section" style="margin-top: 40px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #2575fc; margin: 0;"><i class="fa-solid fa-prescription"></i> Your Prescriptions</h2>
+                <button onclick="showDashboard()" class="back-btn"
+                    style="display: none; padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+            </div>
+            {% for prescription in prescriptions %}
+            <div
+                style="background: white; border: 2px solid #e0e0e0; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="color: #2575fc; margin-bottom: 10px;">Prescription #{{ prescription.id }}</h3>
+                        <p><strong>Doctor:</strong> Dr. {{ prescription.doctor.name }}</p>
+                        <p><strong>Date:</strong> {{ prescription.created_at|date:"F d, Y" }}</p>
+                        <p><strong>Patient:</strong> {{ prescription.patient_name }} (Age: {{ prescription.age }})</p>
+                        {% if prescription.weight %}<p><strong>Weight:</strong> {{ prescription.weight }} kg</p>{% endif %}
+                        {% if prescription.height %}<p><strong>Height:</strong> {{ prescription.height }} cm</p>{% endif %}
+                    </div>
+                    {% if prescription.sent_via_email %}
+                    <span
+                        style="background: #ffe600; color: #000; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                        <i class="fa-solid fa-envelope"></i> Sent via Email
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if prescription.diagnosis %}
+                <div style="margin: 15px 0; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                    <strong style="color: #2575fc;">Diagnosis:</strong> {{ prescription.diagnosis }}
+                </div>
+                {% endif %}
+
+                <div style="margin: 15px 0;">
+                    <strong style="color: #2575fc; font-size: 16px;"><i class="fa-solid fa-pills"></i>
+                        Medications:</strong>
+                    <div style="overflow-x: auto; margin-top: 10px;">
+                        <table
+                            style="width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #2575fc;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                                    <th
+                                        style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 60px;">
+                                        S.No.</th>
+                                    <th
+                                        style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 150px;">
+                                        Medication</th>
+                                    <th
+                                        style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 100px;">
+                                        Dosage</th>
+                                    <th
+                                        style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 120px;">
+                                        Frequency</th>
+                                    <th
+                                        style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid rgba(255,255,255,0.3); min-width: 100px;">
+                                        Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for med in prescription.medications %}
+                                <tr style="border-bottom: 2px solid #e0e0e0; transition: background 0.3s ease; background: {% if forloop.counter|divisibleby:2 %}#fafbfc{% else %}white{% endif %};"
+                                    onmouseover="this.style.background='#f0f8ff'"
+                                    onmouseout="this.style.background='{% if forloop.counter|divisibleby:2 %}#fafbfc{% else %}white{% endif %}'">
+                                    <td
+                                        style="padding: 14px 12px; border-right: 2px solid #e0e0e0; font-weight: 600; color: #2575fc; white-space: nowrap;">
+                                        {{ forloop.counter }}</td>
+                                    <td
+                                        style="padding: 14px 12px; border-right: 2px solid #e0e0e0; font-weight: 500; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ med.name }}</td>
+                                    <td
+                                        style="padding: 14px 12px; border-right: 2px solid #e0e0e0; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ med.dosage }}</td>
+                                    <td
+                                        style="padding: 14px 12px; border-right: 2px solid #e0e0e0; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ med.frequency }}</td>
+                                    <td
+                                        style="padding: 14px 12px; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ med.duration }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% if prescription.notes %}
+                <div style="margin-top: 15px; padding: 15px; background: #fff9e6; border-radius: 8px;">
+                    <strong style="color: #2575fc;">Notes:</strong> {{ prescription.notes }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div
+            style="background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #2575fc; margin: 0;"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</h2>
+                <button onclick="closeAppointmentModal()"
+                    style="background: #ff4444; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <form id="appointmentForm" onsubmit="bookAppointment(event)">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Select
+                        Doctor</label>
+                    <select id="appointment-doctor" required
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        <option value="">-- Select Doctor --</option>
+                        {% for doctor in available_doctors %}
+                        <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialty|default:"General
+                            Medicine" }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Appointment
+                        Date</label>
+                    <input type="date" id="appointment-date" required min=""
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Appointment
+                        Time</label>
+                    <input type="time" id="appointment-time" required
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; color: #2575fc; margin-bottom: 5px;">Reason for
+                        Visit</label>
+                    <textarea id="appointment-reason" rows="3" placeholder="Brief description of your health concern"
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;"></textarea>
+                </div>
+                <button type="submit"
+                    style="width: 100%; padding: 12px; background: #2575fc; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Section Visibility Logic
+        function showSection(sectionId) {
+            // Hide everything first
+            const sections = [
+                'medicine-search-section',
+                'features-nav',
+                'appointments-section',
+                'matched-medicines-section',
+                'prescriptions-section'
+            ];
+
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            // Show requested section
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.style.display = 'block';
+                // Show back buttons inside this section
+                const backBtns = target.querySelectorAll('.back-btn');
+                backBtns.forEach(btn => btn.style.display = 'inline-block');
+            }
+        }
+
+        function showDashboard() {
+            // Show default dashboard view
+            const sections = [
+                'medicine-search-section',
+                'features-nav',
+                'appointments-section',
+                'matched-medicines-section',
+            ];
+
+            // Revert all to their original state (mostly block, except results hidden)
+            // But we actually want to mimic the initial load state
+
+            // Simpler approach: Reload page or manually reset
+            // Let's manually reset for SPA feel without reload
+
+            if (document.getElementById('medicine-search-section')) document.getElementById('medicine-search-section').style.display = 'block';
+            if (document.getElementById('features-nav')) document.getElementById('features-nav').style.display = 'grid'; // Grid for nav
+            if (document.getElementById('appointments-section')) document.getElementById('appointments-section').style.display = 'block';
+            if (document.getElementById('matched-medicines-section')) document.getElementById('matched-medicines-section').style.display = 'block';
+
+            // Do NOT automatically show prescriptions-section here; it will only
+            // be shown when the user clicks the "My Prescriptions" card.
+
+            // Also hide back button in search
+            const searchBack = document.querySelector('#medicine-search-section .back-btn');
+            if (searchBack) searchBack.style.display = 'none';
+        }
+
+        async function searchMedicine() {
+            const searchInput = document.getElementById('medicine-search-input');
+            const searchTerm = searchInput.value.trim();
+            const resultsDiv = document.getElementById('search-results');
+            const container = document.getElementById('results-container');
+
+            if (!searchTerm) {
+                alert('Please enter a medicine name to search');
+                return;
+            }
+
+            try {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+                const response = await fetch('/search-medicine/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        search_term: searchTerm
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsDiv.style.display = 'block';
+
+                    if (data.results.length === 0) {
+                        container.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No medicines found. Try a different search term.</p>';
+                    } else {
+                        let html = `<p style="margin-bottom: 15px; color: #666;">Found <strong>${data.count}</strong> result(s):</p>`;
+                        html += '<div style="overflow-x: auto;">';
+                        html += '<table style="width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #2575fc;">';
+                        html += '<thead><tr style="background: linear-gradient(135deg, #6a11cb, #2575fc);">';
+                        html += '<th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">Medicine Name</th>';
+                        html += '<th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">Shop Name</th>';
+                        html += '<th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">Location</th>';
+                        html += '<th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">Quantity</th>';
+                        html += '<th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-right: 2px solid rgba(255,255,255,0.3); border-bottom: 2px solid rgba(255,255,255,0.3);">Price</th>';
+                        html += '<th style="padding: 14px 12px; text-align: left; color: white; font-weight: 700; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.3);">Action</th>';
+                        html += '</tr></thead><tbody>';
+
+                        data.results.forEach((result, index) => {
+                            const bgColor = index % 2 === 0 ? '#fafbfc' : 'white';
+                            html += `<tr style="border-bottom: 2px solid #e0e0e0; background: ${bgColor};">`;
+                            html += `<td style="padding: 14px 12px; border-right: 2px solid #e0e0e0; font-weight: 500;">${result.medicine_name}</td>`;
+                            html += `<td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">${result.shop_name}</td>`;
+                            html += `<td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">${result.shop_location}</td>`;
+                            html += `<td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">${result.quantity}</td>`;
+                            html += `<td style="padding: 14px 12px; border-right: 2px solid #e0e0e0;">₹${result.price}</td>`;
+                            html += `<td style="padding: 14px 12px;"><button onclick="placeOrder(${result.medicine_id}, ${result.shop_id}, '${result.medicine_name.replace(/'/g, "\\'")}', '${result.shop_name.replace(/'/g, "\\'")}', ${result.price})" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;"><i class="fa-solid fa-shopping-cart"></i> Order</button></td>`;
+                            html += '</tr>';
+                        });
+
+                        html += '</tbody></table></div>';
+                        container.innerHTML = html;
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error searching: ' + error.message);
+            }
+        }
+
+        // Allow Enter key to search
+        document.getElementById('medicine-search-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchMedicine();
+            }
+        });
+
+        // Place Order Function (from matched medicines)
+        async function placeOrder(medicineId, shopId, medicineName, shopName, price) {
+            const quantity = prompt(`Enter quantity for ${medicineName}:\nPrice per unit: ₹${price}`);
+
+            if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            const phone = prompt('Enter your phone number:');
+            if (!phone || phone.trim() === '') {
+                alert('Phone number is required');
+                return;
+            }
+
+            const address = prompt('Enter delivery address (optional):') || '';
+
+            const totalPrice = parseFloat(price) * parseInt(quantity);
+
+            if (!confirm(`Confirm Order:\n\nMedicine: ${medicineName}\nShop: ${shopName}\nQuantity: ${quantity}\nTotal Price: ₹${totalPrice.toFixed(2)}\n\nProceed?`)) {
+                return;
+            }
+
+            try {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+                const response = await fetch('/place-order/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        medicine_id: medicineId,
+                        shop_id: shopId,
+                        quantity: parseInt(quantity),
+                        phone_number: phone,
+                        delivery_address: address
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`Order placed successfully!\nOrder ID: #${data.order_id}\nStatus: ${data.status}`);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+        }
+
+        // Appointment Booking Functions
+        function openAppointmentModal() {
+            const modal = document.getElementById('appointmentModal');
+            const dateInput = document.getElementById('appointment-date');
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            modal.style.display = 'flex';
+        }
+
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').style.display = 'none';
+            document.getElementById('appointmentForm').reset();
+        }
+
+        async function bookAppointment(event) {
+            event.preventDefault();
+
+            const doctorId = document.getElementById('appointment-doctor').value;
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const reason = document.getElementById('appointment-reason').value;
+
+            if (!doctorId || !date || !time) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+                const response = await fetch('/book-appointment/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        doctor_id: doctorId,
+                        appointment_date: date,
+                        appointment_time: time,
+                        reason: reason
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`Appointment booked successfully!\nAppointment ID: #${data.appointment_id}\nDate: ${date} at ${time}`);
+                    closeAppointmentModal();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error booking appointment: ' + error.message);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
